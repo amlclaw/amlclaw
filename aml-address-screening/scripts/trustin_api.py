@@ -35,7 +35,6 @@ class TrustInAPI:
             api_key: TrustIn API key.
         """
         self.api_key = api_key or os.getenv("TRUSTIN_API_KEY")
-        self.jwt_token = os.getenv("TRUSTIN_JWT_TOKEN")
         
         if not self.api_key:
             raise ValueError(
@@ -48,17 +47,10 @@ class TrustInAPI:
             "Content-Type": "text/plain",
             "User-Agent": "amlclaw-address-screening/0.1.0"
         })
-        if self.jwt_token:
-            self.session.headers.update({
-                "Authorization": self.jwt_token
-            })
     
     def _make_request(self, endpoint: str, data: Dict, require_auth: bool = False) -> Dict:
         """Make request to TrustIn API."""
         url = f"{self.BASE_URL}/{endpoint}?apikey={self.api_key}"
-        
-        if require_auth and not self.jwt_token:
-            raise ValueError(f"Endpoint {endpoint} requires TRUSTIN_JWT_TOKEN environment variable.")
             
         try:
             # The API expects raw string payload in text/plain format according to curl
@@ -69,7 +61,7 @@ class TrustInAPI:
             raise Exception("TrustIn API request timed out")
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 401:
-                raise Exception("Invalid authorization or expired JWT token")
+                raise Exception("Invalid authorization (Check API Key)")
             else:
                 raise Exception(f"TrustIn API error: {e}")
         except json.JSONDecodeError:
