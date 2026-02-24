@@ -1,0 +1,197 @@
+[
+  {
+    "rule_id": "SG-DPT-SEVERE-001",
+    "category": "Deposit",
+    "name": "Zero-Tolerance Absolute Exposure (Sanctions/Terrorism/Illicit)",
+    "description": "Trigger Severe Freeze if the flow contains any percentage (>0%) of severe risks like Sanctions, Terrorism, or Illicit Markets.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Other Financial Crimes", "Public Freezing Action", "Illicit Markets"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 0,
+        "unit": "%"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "TrustIn KYA Pro SG DPT Guide Section 1.A & 2.2"
+  },
+  {
+    "rule_id": "SG-DPT-SEVERE-002",
+    "category": "Deposit",
+    "name": "Zero-Tolerance Direct Interaction (Sanctions/Terrorism/Illicit)",
+    "description": "Trigger Severe Freeze for any direct interaction (1-hop) with severe risk entities.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Other Financial Crimes", "Public Freezing Action", "Illicit Markets"]
+      },
+      {
+        "parameter": "path.node.deep",
+        "operator": "==",
+        "value": 1,
+        "unit": "Hops"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "TrustIn KYA Pro SG DPT Guide Section 1.A & 2.2"
+  },
+  {
+    "rule_id": "SG-DPT-HIGH-001",
+    "category": "Deposit",
+    "name": "High-Risk Exposure (Cybercrime & Mixers)",
+    "description": "Trigger EDD or Reject if exposure to Cybercrime, Mixers, or High-Risk Entities exceeds 10% AND risk amount > 50 USD.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Cybercrime", "Obfuscation", "Gambling", "High-Risk Entities"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 10,
+        "unit": "%"
+      },
+      {
+        "parameter": "path.risk_amount_usd",
+        "operator": ">",
+        "value": 50,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "High",
+    "action": "EDD",
+    "reference": "TrustIn KYA Pro SG DPT Guide Section 1.B & 2.2"
+  },
+  {
+    "rule_id": "SG-DPT-MED-001",
+    "category": "Deposit",
+    "name": "Medium-Risk Exposure (Grey Industry/Spam)",
+    "description": "Trigger SOF Review if exposure to Medium risks exceeds 30% AND risk amount > 1000 USD.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.secondary_category",
+        "operator": "IN",
+        "value": ["Black/Grey Industry", "MEV Bots/Arbitrage", "Spam"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 30,
+        "unit": "%"
+      },
+      {
+        "parameter": "path.risk_amount_usd",
+        "operator": ">",
+        "value": 1000,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "Medium",
+    "action": "Review",
+    "reference": "TrustIn KYA Pro SG DPT Guide Section 1.C & 2.2"
+  },
+  {
+    "rule_id": "SG-DPT-WHL-001",
+    "category": "Deposit",
+    "name": "CEX Whitelist Stop Rule",
+    "description": "Stop penetrating graph paths if a known CEX or TradFi institution is encountered to prevent false positives.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.secondary_category",
+        "operator": "IN",
+        "value": ["CEX", "TradFi"]
+      }
+    ],
+    "risk_level": "Low",
+    "action": "Whitelist",
+    "reference": "TrustIn KYA Pro SG DPT Guide Section 2.1"
+  },
+  {
+    "rule_id": "SG-DPT-TX-001",
+    "category": "Withdrawal",
+    "name": "Travel Rule Verification",
+    "description": "Trigger Travel Rule verification if single transfer > 1000 USD (~ 1350 SGD).",
+    "conditions": [
+      {
+        "parameter": "path.amount",
+        "operator": ">",
+        "value": 1000,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "Medium",
+    "action": "Review",
+    "reference": "TrustIn KYA Pro SG DPT Guide Section 2.3"
+  },
+  {
+    "rule_id": "SG-DPT-TX-002",
+    "category": "CDD",
+    "name": "Occasional Transaction KYC Trigger",
+    "description": "Trigger full KYC/CDD if occasional transaction amount > 3500 USD (~ 4700 SGD).",
+    "conditions": [
+      {
+        "parameter": "path.amount",
+        "operator": ">",
+        "value": 3500,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "High",
+    "action": "EDD",
+    "reference": "TrustIn KYA Pro SG DPT Guide Section 2.3"
+  },
+  {
+    "rule_id": "SG-DPT-TX-003",
+    "category": "Ongoing Monitoring",
+    "name": "Structuring Alert (Daily Volume)",
+    "description": "Trigger alert if daily cumulative deposit > 3000 USD (Ant-smurfing).",
+    "conditions": [
+      {
+        "parameter": "target.daily_deposit_usd",
+        "operator": ">",
+        "value": 3000,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "High",
+    "action": "Review",
+    "reference": "TrustIn KYA Pro SG DPT Guide Section 2.3"
+  },
+  {
+    "rule_id": "SG-DPT-CFT-001",
+    "category": "Withdrawal",
+    "name": "CFT Zero-Tolerance Outflow (Hop Tracing)",
+    "description": "Trigger Severe Freeze and STR if outflow path interacts with Terrorism Financing, Sanctions, or Illicit Markets to prevent providing material support to bad actors.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Illicit Markets", "Public Freezing Action"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 0,
+        "unit": "%"
+      },
+      {
+        "parameter": "path.node.deep",
+        "operator": "<=",
+        "value": 3,
+        "unit": "Hops"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "TrustIn KYA Pro SG DPT Guide Section 1.A & 2.3 (Outflow capped at 3 hops)"
+  }
+]

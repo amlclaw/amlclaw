@@ -1,0 +1,11 @@
+# Core dependencies for aml-address-screening skill
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# Optional: Additional utilities for enhanced functionality
+# web3>=6.0.0  # For Ethereum address validation and interaction
+# tronpy>=2.0.0  # For Tron address validation and interaction
+
+# Development dependencies (not required for runtime)
+# pytest>=7.0.0
+# pytest-cov>=4.0.0

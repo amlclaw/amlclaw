@@ -1,0 +1,158 @@
+[
+  {
+    "rule_id": "UAE-VARA-SEVERE-001",
+    "category": "Deposit",
+    "name": "Absolute Zero-Tolerance (Sanctions/Terrorism)",
+    "description": "Trigger Severe Freeze for any exposure to Sanctions, Terrorism, Law Enforcement Freezes, or Illicit Markets.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Other Financial Crimes", "Public Freezing Action", "Illicit Markets"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 0,
+        "unit": "%"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "UAE EOCN & VARA Compliance Guidelines 2.1"
+  },
+  {
+    "rule_id": "UAE-VARA-SEVERE-002",
+    "category": "Deposit",
+    "name": "High-Risk Jurisdiction & CEX Strict Ban",
+    "description": "Immediately freeze assets if interacting directly with High-Risk Jurisdiction CEXs.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "==",
+        "value": "High-Risk Entities"
+      },
+      {
+        "parameter": "path.node.deep",
+        "operator": "==",
+        "value": 1,
+        "unit": "Hops"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "TrustIn UAE VARA Guide 2.4"
+  },
+  {
+    "rule_id": "UAE-VARA-HIGH-001",
+    "category": "Deposit",
+    "name": "Strict Obfuscation & Anonymity Ban",
+    "description": "Reject transactions exposed to Privacy Tokens, Mixers, or anonymizing protocols per VARA explicit prohibitions.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "==",
+        "value": "Obfuscation"
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 0,
+        "unit": "%"
+      }
+    ],
+    "risk_level": "High",
+    "action": "Reject",
+    "reference": "VARA Prohibited Activities (Anonymity-Enhanced Crypto)"
+  },
+  {
+    "rule_id": "UAE-VARA-HIGH-002",
+    "category": "Deposit",
+    "name": "Cybercrime Dust-Filtered Threshold",
+    "description": "Trigger EDD for Cybercrime exposure only if the percentage > 10% AND the amount > 100 USD (dust filter).",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "==",
+        "value": "Cybercrime"
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 10,
+        "unit": "%"
+      },
+      {
+        "parameter": "path.risk_amount_usd",
+        "operator": ">",
+        "value": 100,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "High",
+    "action": "EDD",
+    "reference": "TrustIn UAE VARA Guide 2.3"
+  },
+  {
+    "rule_id": "UAE-VARA-TX-001",
+    "category": "Withdrawal",
+    "name": "VARA Travel Rule & CDD Trigger",
+    "description": "Trigger Travel Rule and mandatory CDD for transactions > 950 USD (approx AED 3500).",
+    "conditions": [
+      {
+        "parameter": "path.amount",
+        "operator": ">",
+        "value": 950,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "Medium",
+    "action": "Review",
+    "reference": "UAE Federal AML Threshold (AED 3,500)"
+  },
+  {
+    "rule_id": "UAE-VARA-TX-002",
+    "category": "Ongoing Monitoring",
+    "name": "VARA Structuring Alert",
+    "description": "Trigger review if daily cumulative volume > 950 USD to detect Smurfing effectively.",
+    "conditions": [
+      {
+        "parameter": "target.daily_deposit_usd",
+        "operator": ">",
+        "value": 950,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "High",
+    "action": "Review",
+    "reference": "TrustIn UAE VARA Guide 3"
+  },
+  {
+    "rule_id": "UAE-VARA-CFT-001",
+    "category": "Withdrawal",
+    "name": "CFT Zero-Tolerance Outflow (Hop Tracing)",
+    "description": "Trigger Severe Freeze and STR if outflow path interacts with Terrorism Financing, Sanctions, or Illicit Markets to prevent providing material support to bad actors.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Illicit Markets", "Public Freezing Action"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 0,
+        "unit": "%"
+      },
+      {
+        "parameter": "path.node.deep",
+        "operator": "<=",
+        "value": 3,
+        "unit": "Hops"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "UAE EOCN & VARA Compliance Guidelines 2.1 (Outflow capped at 3 hops)"
+  }
+]

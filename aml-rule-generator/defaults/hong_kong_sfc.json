@@ -1,0 +1,152 @@
+[
+  {
+    "rule_id": "HK-SFC-SEVERE-001",
+    "category": "Deposit",
+    "name": "Zero-Tolerance Absolute Exposure (Sanctions/Terrorism/Illicit)",
+    "description": "Trigger Severe Freeze if the flow contains any trace (>0%) of severe risks like Sanctions, Terrorism, or Illicit Markets.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Other Financial Crimes", "Public Freezing Action", "Illicit Markets"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 0,
+        "unit": "%"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "SFC AML Guideline 4.1.9 & 12.7"
+  },
+  {
+    "rule_id": "HK-SFC-HIGH-001",
+    "category": "Deposit",
+    "name": "Zero-Tolerance Obfuscation and Cybercrime",
+    "description": "SFC mandates rejecting deposits directly exposed to Cybercrime or Obfuscation (Mixers, Darknet).",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Cybercrime", "Obfuscation"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 0,
+        "unit": "%"
+      }
+    ],
+    "risk_level": "High",
+    "action": "Reject",
+    "reference": "SFC AML Guideline 12.15.2"
+  },
+  {
+    "rule_id": "HK-SFC-HIGH-002",
+    "category": "Deposit",
+    "name": "High-Risk Entities Exposure Threshold",
+    "description": "Trigger EDD if exposure to Gambling or High-Risk Entities exceeds 30% AND risk amount > 1000 USD.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Gambling", "High-Risk Entities"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 30,
+        "unit": "%"
+      },
+      {
+        "parameter": "path.risk_amount_usd",
+        "operator": ">",
+        "value": 1000,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "High",
+    "action": "EDD",
+    "reference": "TrustIn HK VATP Guide Section 2.1"
+  },
+  {
+    "rule_id": "HK-SFC-WHL-001",
+    "category": "Deposit",
+    "name": "CEX & TradFi Whitelist",
+    "description": "Stop penetrating graph paths if a compliant Centralized Exchange or TradFi institution is encountered.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.secondary_category",
+        "operator": "IN",
+        "value": ["CEX", "TradFi"]
+      }
+    ],
+    "risk_level": "Low",
+    "action": "Whitelist",
+    "reference": "TrustIn HK VATP Guide Section 2.1"
+  },
+  {
+    "rule_id": "HK-SFC-TX-001",
+    "category": "Withdrawal",
+    "name": "Travel Rule / Unhosted Wallet Trigger",
+    "description": "Trigger Travel Rule and Unhosted Wallet Proof of Ownership for amounts > 1000 USD (~7800 HKD).",
+    "conditions": [
+      {
+        "parameter": "path.amount",
+        "operator": ">",
+        "value": 1000,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "Medium",
+    "action": "Review",
+    "reference": "SFC AML Guideline 12.11 & 12.14"
+  },
+  {
+    "rule_id": "HK-SFC-TX-002",
+    "category": "Ongoing Monitoring",
+    "name": "Structuring / Anti-Smurfing Alert",
+    "description": "Trigger STR review if daily accumulation > 10000 USD to prevent evading the HKD 8000 Travel Rule limit.",
+    "conditions": [
+      {
+        "parameter": "target.daily_deposit_usd",
+        "operator": ">",
+        "value": 10000,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "High",
+    "action": "Review",
+    "reference": "SFC AML Guideline 5.10 (Structuring)"
+  },
+  {
+    "rule_id": "HK-SFC-CFT-001",
+    "category": "Withdrawal",
+    "name": "CFT Zero-Tolerance Outflow (Hop Tracing)",
+    "description": "Trigger Severe Freeze and STR if outflow path interacts with Terrorism Financing, Sanctions, or Illicit Markets to prevent providing material support to bad actors.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Illicit Markets", "Public Freezing Action"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 0,
+        "unit": "%"
+      },
+      {
+        "parameter": "path.node.deep",
+        "operator": "<=",
+        "value": 3,
+        "unit": "Hops"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "SFC AML Guideline 4.1.9 & 12.7 (Outflow capped at 3 hops)"
+  }
+]
