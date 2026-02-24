@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMLClaw | LLM-Native Crypto Compliance Toolkit</title>
+    <meta name="description" content="An open-source, LLM-native toolkit for automated Crypto AML investigations, rule-engine configuration, and Continuous Risk Monitoring.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(9, 9, 11, 0) 70%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .glass-card {
+            background: rgba(24, 24, 27, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(63, 63, 70, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.15);
+            transform: translateY(-2px);
+        }
+
+        pre {
+            background: #18181b !important;
+            border: 1px solid #27272a;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        dark: {
+                            900: '#09090b',
+                            800: '#18181b',
+                            700: '#27272a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-900 text-zinc-300 min-h-screen selection:bg-brand-500/30 selection:text-white relative overflow-x-hidden">
+
+    <!-- Ambient Background Glow -->
+    <div class="hero-glow"></div>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-dark-900/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-6 h-6 text-brand-500"></i>
+                <span class="text-xl font-bold tracking-tight text-white">AML<span class="text-brand-500">Claw</span></span>
+            </div>
+            <div class="flex items-center gap-6">
+                <a href="#features" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Features</a>
+                <a href="#installation" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Installation</a>
+                <a href="https://github.com/amlclaw/amlclaw" target="_blank" class="flex items-center gap-2 text-sm font-medium bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full transition-all">
+                    <i data-lucide="github" class="w-4 h-4"></i>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-6 mt-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-500 text-xs font-semibold uppercase tracking-wider mb-8">
+                <i data-lucide="bot" class="w-4 h-4"></i>
+                LLM-Native Skill Pack
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6">
+                Predictive Compliance for <br/>
+                <span class="gradient-text">Autonomous Agents</span>
+            </h1>
+            <p class="text-lg md:text-xl text-zinc-400 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+                AMLClaw is an open-source toolkit designed entirely for LLM frameworks like Claude Code and OpenClaw. Empower your agents with enterprise-grade crypto investigation and risk monitoring capabilities instantly.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#installation" class="w-full sm:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-500 text-white rounded-full font-semibold transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]">
+                    Get Started
+                </a>
+                <a href="https://github.com/amlclaw/amlclaw" target="_blank" class="w-full sm:w-auto px-8 py-3.5 bg-dark-800 hover:bg-dark-700 text-white border border-zinc-700 rounded-full font-semibold transition-all flex items-center justify-center gap-2">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                    Star on GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features / Modules Grid -->
+    <section id="features" class="py-24 bg-dark-800/50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Core Agent Skills</h2>
+                <p class="text-zinc-400">Two highly cohesive modules designed for LLM execution.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Skill 1 -->
+                <div class="glass-card p-8 rounded-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-opacity opacity-0 group-hover:opacity-100"></div>
+                    <div class="w-12 h-12 bg-dark-800 border border-zinc-700 rounded-xl flex items-center justify-center mb-6 text-brand-500">
+                        <i data-lucide="file-json-2" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3 tracking-wide">AML Rule Generator</h3>
+                    <p class="text-zinc-400 mb-6 text-sm leading-relaxed">
+                        Reads global crypto regulatory documents (FATF, MAS, VARA) from the references directory and synthesizes highly localized, machine-readable <code class="text-brand-500 bg-brand-500/10 px-1 rounded">rules.json</code> enforcement policies.
+                    </p>
+                    <ul class="text-zinc-300 text-sm space-y-2">
+                        <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-brand-500"></i> Localized JSON Rule Schemas</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-brand-500"></i> Zero-Tolerance Enforcement Configuration</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-brand-500"></i> Regulatory Redline Mapping</li>
+                    </ul>
+                </div>
+
+                <!-- Skill 2 -->
+                <div class="glass-card p-8 rounded-2xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 transition-opacity opacity-0 group-hover:opacity-100"></div>
+                    <div class="w-12 h-12 bg-dark-800 border border-zinc-700 rounded-xl flex items-center justify-center mb-6 text-blue-400">
+                        <i data-lucide="network" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-3 tracking-wide">Address Screening (KYA)</h3>
+                    <p class="text-zinc-400 mb-6 text-sm leading-relaxed">
+                        Deep-scans a blockchain address up to 5 hops, mathematically maps fund flows, and aggressively evaluates exposure against your local <code class="text-brand-500 bg-brand-500/10 px-1 rounded">rules.json</code> to produce professional Markdown Audit reports.
+                    </p>
+                    <ul class="text-zinc-300 text-sm space-y-2">
+                        <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-brand-500"></i> Sub-second API Graph Navigation</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-brand-500"></i> Automated Evidence Tracing (A --$--> B)</li>
+                        <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-brand-500"></i> Natural Language LLM Audit Reporting</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section id="installation" class="py-24 px-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Plug & Play Installation</h2>
+                <p class="text-zinc-400">Deploy effortlessly to OpenClaw, Claude Code, or any File-System LLM framework.</p>
+            </div>
+
+            <div class="bg-dark-800 border border-zinc-700 rounded-2xl p-6 md:p-10 mb-8 overflow-hidden">
+                <h4 class="text-white font-semibold mb-4 text-lg">1. Clone into your Workspace</h4>
+                <p class="text-sm text-zinc-400 mb-4">Pull the skills directly into your agent's environment.</p>
+                <div class="bg-dark-900 rounded-lg p-4 flex items-center justify-between mb-8 overflow-x-auto">
+                    <code class="text-brand-100 text-sm whitespace-nowrap">git clone https://github.com/amlclaw/amlclaw.git ./skills/amlclaw</code>
+                </div>
+
+                <h4 class="text-white font-semibold mb-4 text-lg">2. Install Dependencies</h4>
+                <p class="text-sm text-zinc-400 mb-4">Python 3.10+ is required for the data extraction modules.</p>
+                <div class="bg-dark-900 rounded-lg p-4 flex items-center justify-between mb-8 overflow-x-auto">
+                    <code class="text-brand-100 text-sm whitespace-nowrap">pip install -r aml-address-screening/requirements.txt</code>
+                </div>
+
+                <h4 class="text-white font-semibold mb-4 text-lg">3. Environment Setup</h4>
+                <p class="text-sm text-zinc-400 mb-4">Provide your Graph Provider API Key to allow deep chain tracing.</p>
+                <div class="bg-dark-900 rounded-lg p-4 mb-4 overflow-x-auto">
+                    <code class="text-zinc-500 text-sm whitespace-nowrap"># Create .env file based on the example</code><br/>
+                    <code class="text-brand-100 text-sm whitespace-nowrap">cp .env.example .env</code>
+                </div>
+            </div>
+
+            <!-- Agent Prompt Demo -->
+            <div class="glass-card rounded-2xl p-8 relative overflow-hidden">
+                <div class="absolute left-0 top-0 w-1 h-full bg-brand-500"></div>
+                <h4 class="text-white font-semibold mb-4 flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-brand-500"></i> Example Agent Prompt
+                </h4>
+                <p class="text-zinc-300 italic text-lg leading-relaxed">
+                    "Use the AML Address Screening skill to investigate Tron address <code class="text-brand-500">TGE94...</code> using our new rules.json file. Check both inflows and outflows up to 3 hops. Then give me a final executive summary."
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 bg-dark-900/50 pt-12 pb-8 px-6 text-center">
+        <div class="flex items-center justify-center gap-2 mb-6">
+            <i data-lucide="shield-check" class="w-6 h-6 text-brand-500"></i>
+            <span class="text-xl font-bold tracking-tight text-white">AML<span class="text-brand-500">Claw</span></span>
+        </div>
+        <p class="text-sm text-zinc-500 mb-6">Designed for Autonomous AI. Open Source & Community Driven.</p>
+        <div class="flex justify-center gap-6">
+            <a href="https://github.com/amlclaw/amlclaw" target="_blank" class="text-zinc-600 hover:text-white transition-colors">
+                <i data-lucide="github" class="w-5 h-5"></i>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
