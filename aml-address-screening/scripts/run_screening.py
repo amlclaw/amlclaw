@@ -20,8 +20,21 @@ def main():
     parser.add_argument("chain", help="Blockchain network (e.g., Tron, Ethereum)")
     parser.add_argument("address", help="Address to investigate")
     parser.add_argument("--direction", choices=["inflow", "outflow", "all"], default="inflow", help="Trace direction")
-    parser.add_argument("--max-depth", type=int, default=5, help="Maximum hop depth (layers 1 to 5)")
+    parser.add_argument("--inflow-hops", type=int, default=3, help="Inflow hop depth")
+    parser.add_argument("--outflow-hops", type=int, default=3, help="Outflow hop depth")
+    parser.add_argument("--max-nodes", type=int, default=100, help="Max nodes per hop")
+    parser.add_argument("--min-timestamp", type=int, help="Min timestamp (ms)")
+    parser.add_argument("--max-timestamp", type=int, help="Max timestamp (ms)")
+    parser.add_argument("--rules-config", default=os.path.join(os.getcwd(), "rules.json"), help="Path to rules.json")
+    parser.add_argument("--max-depth", type=int, help="Deprecated (use --inflow-hops/--outflow-hops)")
     args = parser.parse_args()
+    
+    # Handle legacy --max-depth
+    if args.max_depth is not None:
+        inflow = outflow = args.max_depth
+    else:
+        inflow = args.inflow_hops
+        outflow = args.outflow_hops
 
     print("\n" + "="*50)
     print(f"🚀 [STEP 1/3] Fetching Raw Graph (Max Depth: {args.max_depth})")
@@ -34,9 +47,14 @@ def main():
         "python3", fetch_script,
         args.chain, args.address,
         "--direction", args.direction,
-        "--inflow-hops", str(args.max_depth),
-        "--outflow-hops", str(args.max_depth)
+        "--inflow-hops", str(inflow),
+        "--outflow-hops", str(outflow),
+        "--max-nodes", str(args.max_nodes)
     ]
+    if args.min_timestamp:
+        fetch_cmd.extend(["--min-timestamp", str(args.min_timestamp)])
+    if args.max_timestamp:
+        fetch_cmd.extend(["--max-timestamp", str(args.max_timestamp)])
     
     try:
         subprocess.run(fetch_cmd, check=True)
@@ -62,7 +80,7 @@ def main():
     print("="*50)
     
     extract_script = os.path.join(script_dir, "extract_risk_paths.py")
-    rules_path = os.path.join(os.getcwd(), "rules.json")
+    rules_path = args.rules_config
     
     if not os.path.exists(rules_path):
         print(f"❌ FAILED: rules.json not found at {rules_path}. Please run aml-rule-generator first.")
@@ -72,7 +90,7 @@ def main():
         "python3", extract_script,
         "--graph", raw_path,
         "--rules", rules_path,
-        "--max-depth", str(args.max_depth)
+        "--max-depth", str(max(inflow, outflow))
     ]
     
     try:
