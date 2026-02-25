@@ -97,6 +97,11 @@ class TrustInAPI:
             "max_nodes_per_hop": kwargs.get("max_nodes_per_hop", 100)
         }
         
+        if kwargs.get("min_timestamp"):
+            submit_payload["min_timestamp"] = kwargs["min_timestamp"]
+        if kwargs.get("max_timestamp"):
+            submit_payload["max_timestamp"] = kwargs["max_timestamp"]
+        
         try:
             submit_res = self._make_request("submit_task", submit_payload)
             task_id = submit_res.get("data")
@@ -115,16 +120,20 @@ class TrustInAPI:
             final_res = self._make_request("get_result", result_payload, require_auth=True)
             
             if final_res.get("code") == 0:
-                raw_graph_data = final_res.get("data", [])
+                raw_data = final_res.get("data", {})
                 
-                # The 'data' field might be a stringified JSON
-                if isinstance(raw_graph_data, str):
+                # The 'data' field might be stringified JSON
+                if isinstance(raw_data, str):
                     try:
-                        raw_graph = json.loads(raw_graph_data)
+                        raw_data = json.loads(raw_data)
                     except json.JSONDecodeError:
-                        raw_graph = []
+                        raw_data = {}
+                
+                # Support the new dict wrapper containing inflow_total_amount
+                if isinstance(raw_data, dict):
+                    raw_graph = raw_data.get("graph", raw_data.get("paths", raw_data))
                 else:
-                    raw_graph = raw_graph_data
+                    raw_graph = raw_data
                 
                 # Heuristically calculate risk score from raw graph tags priority
                 max_priority = 4

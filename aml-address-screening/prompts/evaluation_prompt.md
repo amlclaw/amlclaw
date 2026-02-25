@@ -17,6 +17,7 @@ When the user runs `fetch_graph.py`, it retrieves the raw interaction graph from
    Match conditions rigorously:
    - Does the `tag.primary_category` IN the graph match the values specified in the rule?
    - Is the `deep` integer matching the numeric threshold (e.g. `== 1`, `<= 3`)?
+   - For percentage thresholds, use the `inflow_total_amount` and `outflow_total_amount` fields provided in the JSON to calculate the total exposure percentage against the `path.amount`. Provide your math in the evidence.
 3. **Draft the Report**: Base your finding strictly on the entries in the `risk_paths` array. If a `Severe` rule triggers in the array, upgrade the `Key Risk Indicators` severity overall.
 
 ## ✍️ Expected Output Format

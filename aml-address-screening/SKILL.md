@@ -31,7 +31,9 @@ When a user invokes you to screen an address, you MUST follow these steps:
    - **Chain**: (e.g., Tron, Ethereum, Solana, Bitcoin)
    - **Address**: The blockchain wallet address.
    - **Direction**: `inflow` (for deposits) OR `outflow` (for withdrawals).
-   - **Hops**: Depth of the graph search via `--inflow-hops` and `--outflow-hops` (Defaults to 3, can accept up to 5).
+   - **Hops**: Depth of the graph trace via `--inflow-hops` and `--outflow-hops` (Defaults to 3, max configurable up to 5).
+   - **Max Nodes Per Hop**: `--max-nodes` bounds the branching factor per hop. Tell the user it defaults to 100, can be set up to 1000. Give them the choice.
+   - **Time Window**: `--min-timestamp` and `--max-timestamp` in milliseconds. Tell the user it defaults to querying the last 4 years up to "now". They can specify custom timeframes.
 
 2. **Policy Dependency Check**:
    Before executing the script, silently check if there is a `rules.json` file in the user's **Current Working Directory (`./`)**. 

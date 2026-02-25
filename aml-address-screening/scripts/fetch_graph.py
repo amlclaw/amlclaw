@@ -19,14 +19,29 @@ try:
 except ImportError:
     pass
 
-def fetch_graph(chain: str, address: str, direction: str = "inflow", inflow_hops: int = 3, outflow_hops: int = 3, api_key: str = None) -> Dict:
+def fetch_graph(chain: str, address: str, direction: str = "inflow", inflow_hops: int = 3, outflow_hops: int = 3, api_key: str = None, min_timestamp: int = None, max_timestamp: int = None, max_nodes_per_hop: int = 100) -> Dict:
     """Fetches graph data for an address using TrustInAPI."""
     start_time = datetime.now()
+    
+    # Apply defaults for timestamps (4 years ago and now) if not provided
+    if not max_timestamp:
+        max_timestamp = int(start_time.timestamp() * 1000)
+    if not min_timestamp:
+        four_years_ago = start_time.timestamp() - (4 * 365 * 24 * 60 * 60)
+        min_timestamp = int(four_years_ago * 1000)
         
     try:
         api = TrustInAPI(api_key=api_key)
         # TrustIn API automatically uses async_detect underneath
-        result = api.kya_pro_detect(chain, address, inflow_hops=inflow_hops, outflow_hops=outflow_hops)
+        kwargs = {
+            "inflow_hops": inflow_hops, 
+            "outflow_hops": outflow_hops,
+            "max_nodes_per_hop": max_nodes_per_hop,
+            "min_timestamp": min_timestamp,
+            "max_timestamp": max_timestamp
+        }
+        
+        result = api.kya_pro_detect(chain, address, **kwargs)
         
         # Package the raw graph details returned by the API
         response = {
@@ -36,6 +51,11 @@ def fetch_graph(chain: str, address: str, direction: str = "inflow", inflow_hops
             "hops_requested": {
                 "inflow": inflow_hops,
                 "outflow": outflow_hops
+            },
+            "parameters": {
+                "max_nodes_per_hop": max_nodes_per_hop,
+                "min_timestamp_ms": min_timestamp,
+                "max_timestamp_ms": max_timestamp
             },
             "timestamp": datetime.now().isoformat(),
             "execution_time": str(datetime.now() - start_time),
@@ -56,12 +76,15 @@ def main():
     parser.add_argument("--direction", choices=["inflow", "outflow", "all"], default="inflow", help="Trace direction")
     parser.add_argument("--inflow-hops", type=int, default=3, help="Inflow depth (default: 3)")
     parser.add_argument("--outflow-hops", type=int, default=3, help="Outflow depth (default: 3)")
+    parser.add_argument("--max-nodes", type=int, default=100, help="Max nodes per hop (default: 100, max: 1000)")
+    parser.add_argument("--min-timestamp", type=int, help="Min timestamp in milliseconds (default: 4 years ago)")
+    parser.add_argument("--max-timestamp", type=int, help="Max timestamp in milliseconds (default: now)")
     parser.add_argument("--api-key", help="TrustIn API Key (optional if in env)")
     
     args = parser.parse_args()
     
     print(f"📡 Fetching Graph for {args.chain} - {args.address}...")
-    print(f"   Direction: {args.direction.upper()} | Inflow: {args.inflow_hops} hops | Outflow: {args.outflow_hops} hops")
+    print(f"   Direction: {args.direction.upper()} | Inflow: {args.inflow_hops} hops | Outflow: {args.outflow_hops} hops | Max Nodes: {args.max_nodes}")
     
     result = fetch_graph(
         chain=args.chain,
@@ -69,7 +92,10 @@ def main():
         direction=args.direction,
         inflow_hops=args.inflow_hops,
         outflow_hops=args.outflow_hops,
-        api_key=args.api_key
+        max_nodes_per_hop=args.max_nodes,
+        api_key=args.api_key,
+        min_timestamp=args.min_timestamp,
+        max_timestamp=args.max_timestamp
     )
     
     if result and result.get("graph_data"):
