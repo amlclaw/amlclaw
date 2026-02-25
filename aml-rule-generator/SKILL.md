@@ -1,7 +1,8 @@
 ---
 name: aml-rule-generator
-description: An intelligent assistant that helps users construct and manage structured AML rules based on business scenarios. It supports interactive Q&A for input methods (manual, file reading, web search, default regional rulesets) and categorizes rules for the AMLClaw engine.
-version: 1.2.0
+description: "Creates and manages structured AML compliance rules for blockchain transaction monitoring. Supports manual input, regulatory document analysis, web search, and pre-built regional rulesets (Singapore MAS, Hong Kong SFC, Dubai VARA). Use when building compliance rules, loading default rulesets, generating AML policy documents, or when the user mentions 'rules', 'compliance policy', 'rule generator'."
+argument-hint: "[region-or-instruction]"
+allowed-tools: Read, Write, Edit, Glob, Grep, WebSearch
 ---
 
 # AMLClaw Rule Generator Skill
@@ -15,6 +16,27 @@ Your persistent state (the rules file) is dynamically read from and saved to the
 
 The JSON structure you must strictly adhere to is defined in:
 `amlclaw/aml-rule-generator/schema/rule_schema.json`
+
+## Rule Categories — Business Scenario Definitions
+
+Every rule MUST belong to exactly one of these 5 categories. The `aml-address-screening` skill uses these categories to filter rules based on the active business scenario.
+
+| Category | Business Meaning | When Applied | Condition Type |
+|---|---|---|---|
+| **Onboarding** | KYC/KYA checks before accepting a customer address. Evaluates the target address's **own tags** (is this address itself blacklisted?). | `--scenario onboarding` | Uses `target.tags.*` parameters |
+| **Deposit** | Inflow risk assessment. Evaluates **fund source** paths (where did the money come from?). | `--scenario deposit` or `--scenario onboarding` | Uses `path.node.*` parameters |
+| **Withdrawal** | Outflow risk assessment. Evaluates **fund destination** paths (where is the money going?). | `--scenario withdrawal` | Uses `path.node.*` parameters |
+| **CDD** | Customer Due Diligence triggers based on transaction thresholds (e.g., single transaction > X USD). | `--scenario cdd` | Uses `path.amount` parameters |
+| **Ongoing Monitoring** | Continuous surveillance rules (e.g., daily volume structuring alerts). | `--scenario monitoring` | Uses `target.daily_*` parameters |
+
+**Critical Design: Onboarding and Deposit Relationship**
+
+The `onboarding` scenario applies BOTH `Onboarding` AND `Deposit` rules. This is intentional:
+- **Onboarding rules** check the target address itself (self-tags): "Is this address already known as a sanctions entity?"
+- **Deposit rules** check the target's historical fund sources: "Has this address received money from illicit sources?"
+- Together they form a complete KYC assessment: self-risk + inflow history.
+
+When creating Onboarding rules, ALWAYS use `target.tags.*` parameters (not `path.node.*`). These evaluate the target address's own labels from the graph API's `data.tags` array.
 
 ## Interactive Startup Workflow (CRITICAL FIRST STEP)
 
@@ -38,6 +60,11 @@ When a user invokes you to generate new rules, you **MUST** first ask them how t
 **Action**:
 1. Analyze the text. Refer strictly to the **Valid Taxonomy Labels** block in `prompts/extraction_prompt.md` to ensure your condition values match TrustIn Graph API exact strings (e.g., `Sanctioned Entity`, `Mixers`, `Hacker/Thief`).
 2. **Categorize by Scenario**: `Onboarding`, `Deposit`, `Withdrawal`, `CDD`, or `Ongoing Monitoring`.
+   - For address self-check rules → `Onboarding` with `target.tags.*` conditions
+   - For inflow risk rules → `Deposit` with `path.node.*` conditions
+   - For outflow risk rules → `Withdrawal` with `path.node.*` conditions
+   - For amount threshold rules → `CDD` with `path.amount` conditions
+   - For daily volume / structuring rules → `Ongoing Monitoring` with `target.daily_*` conditions
 3. Present the extracted rules to the user in a Markdown table.
 4. Ask for confirmation: "Should I append these to `./rules.json`?"
 5. Upon confirmation, append to `./rules.json` (in the current directory).
@@ -66,7 +93,20 @@ When a user invokes you to generate new rules, you **MUST** first ask them how t
 **Trigger**: Conversational requests to modify specific rules.
 **Action**: Find the rule in `./rules.json`, apply the CRUD operation, and save the file to the current directory.
 
+### 6. Rule Validation (After Every Save)
+After saving `rules.json`, run the validation script:
+```bash
+python3 amlclaw/aml-rule-generator/scripts/validate_rules.py rules.json
+```
+Fix any errors before considering the rules final.
+
 ## Core Directives
 1. **Always Validate**: Ensure output is strictly a valid JSON array (`[...]`). No formatting ticks (````json````) inside the `./rules.json` file.
 2. **Web Search**: If Option 3 is chosen, proactively use your `search_web` tool to find authoritative sources (e.g., FATF, MAS, SFC, FinCEN).
 3. **Format**: Always use Markdown tables with columns: `[Rule ID, Scenario Category, Name, Core Condition, Risk, Action]` for user readability.
+
+## Limitations
+- Does NOT execute or enforce rules — it only generates the `rules.json` policy file
+- Rule conditions must use exact TrustIn tag values (case-sensitive); see `references/Trustin AML labels.md`
+- OR logic between conditions requires creating separate rules (no native OR operator)
+- Generated compliance documents are templates, not legal advice

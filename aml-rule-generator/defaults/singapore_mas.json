@@ -1,5 +1,37 @@
 [
   {
+    "rule_id": "SG-DPT-ONB-SEVERE-001",
+    "category": "Onboarding",
+    "name": "Onboarding Zero-Tolerance — Target Self-Tagged (Sanctions/Freeze/Illicit)",
+    "description": "Reject onboarding if the target address itself is tagged as Sanctions, Terrorism Financing, Public Freezing Action, Illicit Markets, or Other Financial Crimes.",
+    "conditions": [
+      {
+        "parameter": "target.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Public Freezing Action", "Illicit Markets", "Other Financial Crimes"]
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Reject",
+    "reference": "MAS Notice PSN02 Section 6 (CDD) & FATF Recommendation 10"
+  },
+  {
+    "rule_id": "SG-DPT-ONB-HIGH-001",
+    "category": "Onboarding",
+    "name": "Onboarding High-Risk — Target Self-Tagged (Cybercrime/Obfuscation)",
+    "description": "Trigger EDD if the target address itself is tagged as Cybercrime or Obfuscation (Mixers, Privacy Tokens).",
+    "conditions": [
+      {
+        "parameter": "target.tags.primary_category",
+        "operator": "IN",
+        "value": ["Cybercrime", "Obfuscation"]
+      }
+    ],
+    "risk_level": "High",
+    "action": "EDD",
+    "reference": "MAS Notice PSN02 Section 6 (EDD) & FATF Recommendation 10"
+  },
+  {
     "rule_id": "SG-DPT-SEVERE-001",
     "category": "Deposit",
     "name": "Zero-Tolerance Absolute Exposure (Sanctions/Terrorism/Illicit)",
@@ -114,6 +146,78 @@
     "risk_level": "Low",
     "action": "Whitelist",
     "reference": "TrustIn KYA Pro SG DPT Guide Section 2.1"
+  },
+  {
+    "rule_id": "SG-DPT-WDR-SEVERE-001",
+    "category": "Withdrawal",
+    "name": "Outflow Zero-Tolerance Exposure (Sanctions/Terrorism Destination)",
+    "description": "Trigger Severe Freeze if outflow reaches any node tagged Sanctions, Terrorism Financing, Illicit Markets, or Public Freezing Action with any exposure > 0%.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Illicit Markets", "Public Freezing Action", "Other Financial Crimes"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 0,
+        "unit": "%"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "MAS Notice PSN02 Section 8 (STR) & FATF Recommendation 20"
+  },
+  {
+    "rule_id": "SG-DPT-WDR-SEVERE-002",
+    "category": "Withdrawal",
+    "name": "Outflow Direct Interaction (Hop 1 Sanctioned Destination)",
+    "description": "Trigger Severe Freeze for direct (1-hop) outflow to sanctioned or terrorism-linked entities.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Sanctions", "Terrorism Financing", "Illicit Markets", "Public Freezing Action", "Other Financial Crimes"]
+      },
+      {
+        "parameter": "path.node.deep",
+        "operator": "==",
+        "value": 1,
+        "unit": "Hops"
+      }
+    ],
+    "risk_level": "Severe",
+    "action": "Freeze",
+    "reference": "MAS Notice PSN02 Section 8 (STR) & FATF Recommendation 20"
+  },
+  {
+    "rule_id": "SG-DPT-WDR-HIGH-001",
+    "category": "Withdrawal",
+    "name": "Outflow High-Risk Destination (Cybercrime/Mixers/Gambling)",
+    "description": "Trigger EDD if outflow reaches Cybercrime, Obfuscation, Gambling, or High-Risk Entities with exposure > 10% AND amount > 50 USD.",
+    "conditions": [
+      {
+        "parameter": "path.node.tags.primary_category",
+        "operator": "IN",
+        "value": ["Cybercrime", "Obfuscation", "Gambling", "High-Risk Entities"]
+      },
+      {
+        "parameter": "path.risk_percentage",
+        "operator": ">",
+        "value": 10,
+        "unit": "%"
+      },
+      {
+        "parameter": "path.risk_amount_usd",
+        "operator": ">",
+        "value": 50,
+        "unit": "USD"
+      }
+    ],
+    "risk_level": "High",
+    "action": "EDD",
+    "reference": "MAS Notice PSN02 Section 6 (EDD) & TrustIn SG DPT Guide"
   },
   {
     "rule_id": "SG-DPT-TX-001",
