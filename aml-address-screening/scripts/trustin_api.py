@@ -25,7 +25,7 @@ class KYAResult:
 class TrustInAPI:
     """Client for TrustIn API (Async Tasks)."""
     
-    BASE_URL = "https://api.trustin-webui-dev.com/api/v2/investigate"
+    BASE_URL = "https://api.trustin.info/api/v2/investigate"
     
     def __init__(self, api_key: Optional[str] = None):
         """
