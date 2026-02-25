@@ -30,7 +30,10 @@ Because each skill contains a standardized `SKILL.md` instruction file, your age
    ```bash
    pip install -r aml-address-screening/requirements.txt
    ```
-3. **Environment Setup**: The graphing engine requires an API key from the TrustIn Graph provider. Unzip or copy the `.env.example` file to create your local `.env`.
+3. **Environment Setup**: The screening engine requires a free API key from the TrustIn Graph provider.
+   - Go to [trustin.info](https://trustin.info) and log in with your Google account.
+   - Click on your avatar to generate an API key (Note: Free tier has a 100 requests/day limit).
+   - Copy the `.env.example` file to create your local `.env`.
 
 ```bash
 cp .env.example .env
