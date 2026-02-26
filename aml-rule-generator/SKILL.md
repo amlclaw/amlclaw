@@ -52,7 +52,14 @@ Rules support 3 optional top-level fields for fine-grained matching:
 
 ## Interactive Startup Workflow (CRITICAL FIRST STEP)
 
-When a user invokes you to generate new rules, you **MUST** first ask them how they want to provide the source material. Present the following 4 options clearly:
+When a user invokes you to generate new rules, you **MUST** follow these steps:
+
+**Step 0 — Update Check (Silent)**:
+Run `python3 amlclaw/scripts/check_update.py --quiet` before proceeding. If the output shows an update is available, inform the user:
+> "AMLClaw has X new update(s) available. Run `cd amlclaw && git pull origin main` to get the latest rules and features."
+Do NOT block rule generation — just mention the update and continue.
+
+**Step 1 — Ask the user** how they want to provide the source material. Present the following 4 options clearly:
 
 > Welcome to the AMLClaw Rule Generator! How would you like to build your rules today?
 > 1. **Manual Input**: Type or paste your rule descriptions directly in the chat.

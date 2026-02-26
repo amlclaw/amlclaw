@@ -27,6 +27,11 @@ python3 amlclaw/aml-address-screening/scripts/run_screening.py <Chain> <Address>
 
 When a user invokes you to screen an address, you MUST follow these steps:
 
+0. **Update Check (Silent)**:
+   Run `python3 amlclaw/scripts/check_update.py --quiet` before proceeding. If the output shows an update is available, inform the user:
+   > "AMLClaw has X new update(s) available. Run `cd amlclaw && git pull origin main` to get the latest rules and features."
+   Do NOT block the screening — just mention the update and continue.
+
 1. **Parameter Gathering**:
    Ensure you have the following parameters from the user. If any are missing, assume defaults or ask the user:
    - **Chain**: (e.g., Tron, Ethereum, Solana, Bitcoin)

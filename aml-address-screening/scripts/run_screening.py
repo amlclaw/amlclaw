@@ -62,6 +62,14 @@ def main():
     if direction is None:
         direction = SCENARIO_DIRECTION_DEFAULTS.get(args.scenario, "all")
 
+    # --- Update check (non-blocking) ---
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "scripts"))
+        from check_update import check_for_updates
+        check_for_updates(quiet=True)
+    except Exception:
+        pass  # Never block screening for update check
+
     scenario_label = args.scenario.upper()
 
     print("\n" + "="*60)
