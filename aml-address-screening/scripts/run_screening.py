@@ -113,7 +113,20 @@ def main():
     rules_path = args.rules_config
 
     if not os.path.exists(rules_path):
-        print(f"FAILED: rules.json not found at {rules_path}. Please run aml-rule-generator first.")
+        print("\n" + "="*60)
+        print("  NO COMPLIANCE RULES FOUND")
+        print("="*60)
+        print(f"\n  rules.json not found at: {rules_path}")
+        print("\n  You need a rules.json policy file before screening.")
+        print("  Use the aml-rule-generator skill to create one:\n")
+        print("  Option 1 (Quick Start - Load regional defaults):")
+        print("    /aml-rule-generator load singapore")
+        print("    /aml-rule-generator load hongkong")
+        print("    /aml-rule-generator load dubai\n")
+        print("  Option 2 (Custom):")
+        print("    /aml-rule-generator\n")
+        print("  This will generate rules.json in your workspace root.")
+        print("="*60 + "\n")
         sys.exit(1)
 
     extract_cmd = [

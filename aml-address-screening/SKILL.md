@@ -50,10 +50,18 @@ When a user invokes you to screen an address, you MUST follow these steps:
 
    **Key design**: `onboarding` and `deposit` use identical Deposit rules — DEP-SELF-* rules check the target's own tags, DEP-OUT-* rules check outflow history, and standard DEP-* rules check inflow sources. Rules self-filter by `direction` and `min_hops`/`max_hops` fields.
 
-3. **Policy Dependency Check**:
-   Before executing the script, silently check if there is a `rules.json` file in the user's **Current Working Directory (`./`)**.
+3. **Policy Dependency Check (CRITICAL — MUST DO BEFORE RUNNING)**:
+   Before executing the script, check if there is a `rules.json` file in the user's **Current Working Directory (`./`)**.
    - If present: Acknowledge that you are loading their local custom policies.
-   - If missing: Warn the user that they are running a "Basic Scan with no custom rules." Recommend they run the `aml-rule-generator` skill first to build their compliance red-lines.
+   - If **MISSING**: **DO NOT proceed with screening.** Instead:
+     1. Inform the user: "No compliance rules found. You need a `rules.json` policy file before I can screen addresses."
+     2. Ask the user which regional ruleset they want to start with:
+        - **Singapore MAS** (19 rules, strict sanctions focus)
+        - **Hong Kong SFC** (18 rules, balanced risk-based)
+        - **Dubai VARA** (19 rules, growth-oriented with red lines)
+     3. Invoke the `aml-rule-generator` skill to load the selected default ruleset.
+     4. After `rules.json` is generated, return to this skill and continue the screening.
+     This ensures the user always has a compliance baseline before screening.
 
 4. **Data Extraction & Risk Pre-processing (1 to 5 Hops)**:
    Run the orchestrator Python command. This will fetch the graph and aggressively filter all 1-5 layer connections against your rules, removing noise and preventing context-loss.
