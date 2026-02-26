@@ -18,7 +18,7 @@ from datetime import datetime
 # Scenario → Category mapping
 # ---------------------------------------------------------------------------
 SCENARIO_CATEGORIES = {
-    "onboarding":  ["Onboarding", "Deposit"],   # KYC = self-check + inflow rules
+    "onboarding":  ["Deposit"],                  # onboarding = deposit rules (DEP-SELF-* + inflow + outflow history)
     "deposit":     ["Deposit"],
     "withdrawal":  ["Withdrawal"],
     "cdd":         ["CDD"],
@@ -31,7 +31,7 @@ SCENARIO_CATEGORIES = {
 # ---------------------------------------------------------------------------
 SCENARIO_PATH_FILTER = {
     "onboarding":  None,    # both directions
-    "deposit":     [-1],    # inflow only
+    "deposit":     None,    # both directions (rules self-filter via direction field)
     "withdrawal":  [1],     # outflow only
     "cdd":         None,    # both directions
     "monitoring":  None,    # both directions
@@ -68,7 +68,6 @@ NODE_LEVEL_PARAMS = {
     "path.node.tags.primary_category",
     "path.node.tags.secondary_category",
     "path.node.tags.risk_level",
-    "path.node.deep",
 }
 
 # ---------------------------------------------------------------------------
@@ -135,24 +134,6 @@ def eval_condition(cond, node_tag, node_deep):
             return actual != value
         elif op == "IN":
             return actual in value
-        return False
-
-    # --- Depth matching ---
-    if param == "path.node.deep":
-        if node_deep is None:
-            return False
-        if op == "==":
-            return node_deep == value
-        elif op == "<=":
-            return node_deep <= value
-        elif op == ">=":
-            return node_deep >= value
-        elif op == "<":
-            return node_deep < value
-        elif op == ">":
-            return node_deep > value
-        elif op == "!=":
-            return node_deep != value
         return False
 
     return None
@@ -275,6 +256,30 @@ def evaluate_target_rules(rules, target_tags):
             })
 
     return findings
+
+
+def rule_applies_to_context(rule, path_dir, node_deep):
+    """
+    Check if a rule applies to the current path direction and hop distance.
+    Uses top-level rule fields: direction, min_hops, max_hops.
+    Rules without these fields match any context (direction-agnostic, hop-agnostic).
+    """
+    # Direction check: -1 = inflow, 1 = outflow
+    rule_dir = rule.get("direction")
+    if rule_dir:
+        dir_map = {"inflow": -1, "outflow": 1}
+        if dir_map.get(rule_dir) != path_dir:
+            return False
+
+    # Hop range check
+    min_h = rule.get("min_hops")
+    max_h = rule.get("max_hops")
+    if min_h is not None and node_deep < min_h:
+        return False
+    if max_h is not None and node_deep > max_h:
+        return False
+
+    return True
 
 
 def rule_matches_node(rule, node_tag, node_deep):
@@ -423,9 +428,11 @@ def extract_risk_paths(graph_data, rules, max_depth=5, scenario="all"):
             if not tag:
                 continue
 
-            # Match rules (pass computed deep, not the mutated node)
+            # Match rules (check direction + hop range, then node-level conditions)
             matched_rule_ids = []
             for rule in rules:
+                if not rule_applies_to_context(rule, path_dir, true_deep):
+                    continue
                 if rule_matches_node(rule, tag, true_deep):
                     matched_rule_ids.append(rule.get("rule_id"))
 

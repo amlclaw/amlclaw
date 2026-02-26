@@ -23,7 +23,7 @@ from datetime import datetime
 # ---------------------------------------------------------------------------
 SCENARIO_DIRECTION_DEFAULTS = {
     "onboarding":  "all",
-    "deposit":     "inflow",
+    "deposit":     "all",
     "withdrawal":  "outflow",
     "cdd":         "all",
     "monitoring":  "all",

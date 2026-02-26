@@ -19,24 +19,36 @@ The JSON structure you must strictly adhere to is defined in:
 
 ## Rule Categories — Business Scenario Definitions
 
-Every rule MUST belong to exactly one of these 5 categories. The `aml-address-screening` skill uses these categories to filter rules based on the active business scenario.
+Every rule MUST belong to exactly one of these 4 categories. The `aml-address-screening` skill uses these categories to filter rules based on the active business scenario.
 
 | Category | Business Meaning | When Applied | Condition Type |
 |---|---|---|---|
-| **Onboarding** | KYC/KYA checks before accepting a customer address. Evaluates the target address's **own tags** (is this address itself blacklisted?). | `--scenario onboarding` | Uses `target.tags.*` parameters |
-| **Deposit** | Inflow risk assessment. Evaluates **fund source** paths (where did the money come from?). | `--scenario deposit` or `--scenario onboarding` | Uses `path.node.*` parameters |
-| **Withdrawal** | Outflow risk assessment. Evaluates **fund destination** paths (where is the money going?). | `--scenario withdrawal` | Uses `path.node.*` parameters |
+| **Deposit** | Full address risk assessment: inflow sources, outflow history, and self-tag checks. | `--scenario deposit` or `--scenario onboarding` | Uses `path.node.*` and `target.tags.*` parameters |
+| **Withdrawal** | Outflow risk assessment: destination paths and self-tag checks. | `--scenario withdrawal` | Uses `path.node.*` and `target.tags.*` parameters |
 | **CDD** | Customer Due Diligence triggers based on transaction thresholds (e.g., single transaction > X USD). | `--scenario cdd` | Uses `path.amount` parameters |
 | **Ongoing Monitoring** | Continuous surveillance rules (e.g., daily volume structuring alerts). | `--scenario monitoring` | Uses `target.daily_*` parameters |
 
-**Critical Design: Onboarding and Deposit Relationship**
+**Critical Design: Onboarding = Deposit**
 
-The `onboarding` scenario applies BOTH `Onboarding` AND `Deposit` rules. This is intentional:
-- **Onboarding rules** check the target address itself (self-tags): "Is this address already known as a sanctions entity?"
-- **Deposit rules** check the target's historical fund sources: "Has this address received money from illicit sources?"
-- Together they form a complete KYC assessment: self-risk + inflow history.
+The `onboarding` and `deposit` scenarios both apply `Deposit` rules. This is intentional — risk changes over time, so an address clean at onboarding may be flagged later at deposit time. The same rules cover both scenarios:
+- **DEP-SELF-* rules** check the target address itself (self-tags): "Is this address tagged as sanctioned?" Uses `target.tags.*` parameters.
+- **DEP-SEVERE/HIGH-* rules** check inflow sources: "Has this address received money from illicit sources?" Uses `path.node.*` with `direction: inflow`.
+- **DEP-OUT-* rules** check outflow history: "Has this address sent money to sanctioned entities?" Uses `path.node.*` with `direction: outflow`.
 
-When creating Onboarding rules, ALWAYS use `target.tags.*` parameters (not `path.node.*`). These evaluate the target address's own labels from the graph API's `data.tags` array.
+### Rule-Level Direction and Hop Filtering
+
+Rules support 3 optional top-level fields for fine-grained matching:
+
+| Field | Type | Description |
+|---|---|---|
+| `direction` | `"inflow"` or `"outflow"` | Which path direction this rule matches. Omit for direction-agnostic rules (self-tag checks, whitelist). |
+| `min_hops` | integer (1-10) | Minimum hop distance (inclusive). Omit if rule matches any distance. |
+| `max_hops` | integer (1-10) | Maximum hop distance (inclusive). Omit if rule matches any distance. |
+
+**Hop-based risk tiering (Pollution Decay Principle):**
+- Hop 1 (direct interaction) → Severe/Freeze (highest risk)
+- Hop 2-3 (near-distance) → Severe/Freeze or High/EDD
+- Hop 4-5 (far-distance) → High/EDD (reduced severity due to distance)
 
 ## Interactive Startup Workflow (CRITICAL FIRST STEP)
 
@@ -59,10 +71,12 @@ When a user invokes you to generate new rules, you **MUST** first ask them how t
 **Input**: Text from the user, parsed documents, or web search results (Options 1, 2, 3).
 **Action**:
 1. Analyze the text. Refer strictly to the **Valid Taxonomy Labels** block in `prompts/extraction_prompt.md` to ensure your condition values match TrustIn Graph API exact strings (e.g., `Sanctioned Entity`, `Mixers`, `Hacker/Thief`).
-2. **Categorize by Scenario**: `Onboarding`, `Deposit`, `Withdrawal`, `CDD`, or `Ongoing Monitoring`.
-   - For address self-check rules → `Onboarding` with `target.tags.*` conditions
-   - For inflow risk rules → `Deposit` with `path.node.*` conditions
-   - For outflow risk rules → `Withdrawal` with `path.node.*` conditions
+2. **Categorize by Scenario**: `Deposit`, `Withdrawal`, `CDD`, or `Ongoing Monitoring`.
+   - For address self-check rules → `Deposit` with `target.tags.*` conditions (DEP-SELF-* pattern)
+   - For inflow risk rules → `Deposit` with `path.node.*` conditions + `direction: inflow`
+   - For outflow history rules (deposit context) → `Deposit` with `path.node.*` conditions + `direction: outflow` (DEP-OUT-* pattern)
+   - For outflow destination rules → `Withdrawal` with `path.node.*` conditions + `direction: outflow`
+   - For withdrawal self-check rules → `Withdrawal` with `target.tags.*` conditions (WDR-SELF-* pattern)
    - For amount threshold rules → `CDD` with `path.amount` conditions
    - For daily volume / structuring rules → `Ongoing Monitoring` with `target.daily_*` conditions
 3. Present the extracted rules to the user in a Markdown table.

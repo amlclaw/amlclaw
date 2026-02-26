@@ -25,7 +25,7 @@
     },
     "risk_level": {
       "type": "string",
-      "enum": ["LOW", "MEDIUM_LOW", "MEDIUM", "HIGH", "CRITICAL"],
+      "enum": ["Low", "Medium", "High", "Severe"],
       "description": "Categorical representation of the risk_score"
     },
     "recommendation": {

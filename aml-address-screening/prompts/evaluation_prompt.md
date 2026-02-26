@@ -15,15 +15,21 @@ When the user runs `fetch_graph.py`, it retrieves the raw interaction graph from
    - If the scenario is NOT "all", only rules from those categories were evaluated — mention this in the report.
    - Check `summary.paths_direction_filtered` — if > 0, note how many paths were excluded due to direction filtering.
 
-   **Target Self-Tag Evaluation (CRITICAL for Onboarding):**
+   **Target Self-Tag Evaluation (CRITICAL for all scenarios):**
    - Check `target.tags` — these are the target address's OWN tags (not from path traversal).
-   - Check `target.self_matched_rules` — if non-empty, the target address itself triggered rules.
-   - For Onboarding scenarios, this is the PRIMARY risk signal: if the address is self-tagged as sanctioned/illicit, it MUST be rejected before even looking at fund flows.
+   - Check `target.self_matched_rules` — if non-empty, the target address itself triggered rules (e.g., DEP-SELF-*, WDR-SELF-*).
+   - Self-tag rules apply to ALL scenarios (Deposit, Withdrawal, etc.): an address tagged as sanctioned/illicit MUST trigger the corresponding action regardless of fund flows.
 
-   **Tag Priority & Depth Rules (CRITICAL):**
+   **Tag Priority & Hop Distance Rules (CRITICAL):**
    - The JSON explicitly provides the winning `tag` and the `matched_rules` IDs.
    - When extracting data for your report, DO NOT just stop at `primary_category`. You MUST extract and display `secondary_category`, `tertiary_category`, and `quaternary_category` if they exist. Use them to provide deep context (e.g. `Sanctions / Prohibited Entity / Huionepay / huionepay-deposit`).
-   - The overall length of a trace branch (`path.hops`) is DIFFERENT from the illicit node's distance (`node.deep`). You MUST cite the exact `deep` integer of the illicit entity. If an illicit entity is at `deep: 1`, it triggers `SEVERE-002` (Direct Interaction). DO NOT label everything as "Hop 5" just because the total path has 5 hops!
+   - The overall length of a trace branch (`path.hops`) is DIFFERENT from the illicit node's distance (`node.deep`). You MUST cite the exact `deep` integer of the illicit entity. DO NOT label everything as "Hop 5" just because the total path has 5 hops!
+   - **Hop-based risk tiering**: Rules now have `min_hops`/`max_hops` fields that determine their severity based on hop distance. For example:
+     - Hop 1 (direct interaction) → typically Severe/Freeze (e.g., `DEP-SEVERE-001`)
+     - Hop 2-3 (near-distance) → typically Severe/Freeze (e.g., `DEP-SEVERE-002`)
+     - Hop 4-5 (far-distance) → typically High/EDD (e.g., `DEP-HIGH-001`)
+   - **Direction-aware rules**: Rules have a `direction` field (`inflow`/`outflow`). DEP-OUT-* rules check the target's outflow history (has the address sent money to sanctioned entities?). This is different from standard inflow analysis.
+   - When reporting, group findings by direction AND hop distance to show the severity gradient clearly.
 
    Match conditions rigorously:
    - Does the `tag.primary_category` IN the graph match the values specified in the rule?
@@ -38,7 +44,7 @@ You must output a polished, audit-ready Markdown document to the `./reports/aml_
 ```markdown
 # AML Address Screening Report
 **Generated:** [YYYY-MM-DD] | **Engine:** Graph Discovery cross-referenced by LLM
-**Scenario:** [Scenario Name] | **Categories Applied:** [Onboarding, Deposit / ALL]
+**Scenario:** [Scenario Name] | **Categories Applied:** [Deposit / Withdrawal / ALL]
 ---
 ### Subject Identification
 - **Network**: `[chain]`
@@ -52,14 +58,14 @@ You must output a polished, audit-ready Markdown document to the `./reports/aml_
 
 | Tag Category | Risk Level | Triggered Rule(s) | Action |
 | :- | :-: | :- | :-: |
-| [Sanctions / Prohibited Entity / ...] | [Severe] | `[SG-DPT-ONB-SEVERE-001]` | **Reject** |
+| [Sanctions / Prohibited Entity / ...] | [Severe] | `[XX-DEP-SELF-SEVERE-001]` | **Freeze** |
 
-*The target address itself carries risk labels. This is independent of fund flow analysis.*
+*The target address itself carries risk labels (DEP-SELF-* or WDR-SELF-* rules). This is independent of fund flow analysis and applies to all scenarios.*
 
 ### Key Risk Indicators (KRI)
 - **Risk Score**: **[0-100]** (Base on highest rule triggered, e.g. Severe = 100, High = 85, Med = 50, Low = 20)
 - **Risk Level**: [LOW | MEDIUM | HIGH | CRITICAL]
-- **Scenario**: `[ONBOARDING/DEPOSIT/WITHDRAWAL/CDD/MONITORING/ALL]`
+- **Scenario**: `[DEPOSIT/WITHDRAWAL/CDD/MONITORING/ALL]`
 - **Trace Direction**: `[INFLOW/OUTFLOW/ALL]`
 - **Paths Analyzed**: [X] total, [Y] excluded by direction filter
 - **Recommendation**: [e.g. "Freeze, EDD" based on triggered custom rules]

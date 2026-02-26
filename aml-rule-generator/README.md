@@ -12,6 +12,11 @@ LLMs and human analysts need a common language to understand what constitutes a 
 - `scripts/`: Python utility scripts for the skill.
 - `prompts/`: Contains the LLM instructions for generating the rules and also for generating a human-readable compliance policy document based on those rules.
 
+## 📖 Documentation
+
+- **[DESIGN.md](DESIGN.md)** — Schema design, category system, and validation pipeline
+- **[CHANGELOG.md](CHANGELOG.md)** — Version history and release notes
+
 ## 🧠 How to Use (For Agents)
 
 1. **Read References:** Analyze documents in the `references/` directory.

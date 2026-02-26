@@ -87,6 +87,21 @@ def validate_schema_structure(rules, schema):
         if "action" in rule and rule["action"] not in valid_actions:
             errors.append(f"{prefix}: invalid action '{rule['action']}'. Valid: {valid_actions}")
 
+        # New V2 fields validation
+        if "direction" in rule:
+            if rule["direction"] not in ("inflow", "outflow"):
+                errors.append(f"{prefix}: invalid direction '{rule['direction']}'. Valid: ['inflow', 'outflow']")
+        if "min_hops" in rule:
+            if not isinstance(rule["min_hops"], int) or rule["min_hops"] < 1:
+                errors.append(f"{prefix}: min_hops must be a positive integer, got '{rule['min_hops']}'")
+        if "max_hops" in rule:
+            if not isinstance(rule["max_hops"], int) or rule["max_hops"] < 1:
+                errors.append(f"{prefix}: max_hops must be a positive integer, got '{rule['max_hops']}'")
+        if "min_hops" in rule and "max_hops" in rule:
+            if isinstance(rule["min_hops"], int) and isinstance(rule["max_hops"], int):
+                if rule["min_hops"] > rule["max_hops"]:
+                    errors.append(f"{prefix}: min_hops ({rule['min_hops']}) > max_hops ({rule['max_hops']})")
+
         # Conditions validation
         if "conditions" in rule:
             if not isinstance(rule["conditions"], list):

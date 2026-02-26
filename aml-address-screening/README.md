@@ -18,6 +18,11 @@ To fully automate Level-1 and Level-2 blockchain AML investigations. The skill f
 1. You must have a `rules.json` file in your main workspace (generate one using the `aml-rule-generator` skill).
 2. You need a `.env` file with a valid `TRUSTIN_API_KEY` (Free via [trustin.info](https://trustin.info)).
 
+## 📖 Documentation
+
+- **[DESIGN.md](DESIGN.md)** — Architecture, design decisions, and rule matching logic
+- **[CHANGELOG.md](CHANGELOG.md)** — Version history and release notes
+
 ## 🧠 How to Use (For Agents)
 
 When asked to screen an address, perform these steps:

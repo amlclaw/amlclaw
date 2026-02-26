@@ -48,5 +48,14 @@ Try asking your Agent the following once `amlclaw` is installed:
 
 > "Use the AML Address Screening skill to investigate Tron address `TGE94...` using our new rules.json file. Check both inflows and outflows up to 3 hops."
 
+## 📖 Documentation
+
+| Document | Description |
+| :--- | :--- |
+| [Address Screening — DESIGN.md](aml-address-screening/DESIGN.md) | Architecture, design decisions, and rule matching logic for the screening pipeline |
+| [Address Screening — CHANGELOG.md](aml-address-screening/CHANGELOG.md) | Version history and release notes |
+| [Rule Generator — DESIGN.md](aml-rule-generator/DESIGN.md) | Schema design, category system, and validation pipeline |
+| [Rule Generator — CHANGELOG.md](aml-rule-generator/CHANGELOG.md) | Version history and release notes |
+
 ---
 *Built for the next generation of predictive LLM compliance.*

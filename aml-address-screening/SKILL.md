@@ -32,7 +32,7 @@ When a user invokes you to screen an address, you MUST follow these steps:
    - **Chain**: (e.g., Tron, Ethereum, Solana, Bitcoin)
    - **Address**: The blockchain wallet address.
    - **Scenario**: The business context for screening. This determines which rules are applied and which path directions are analyzed. See the **Scenario Reference** table below. Defaults to `all`.
-   - **Direction**: `inflow` (for deposits), `outflow` (for withdrawals), or `all`. If omitted, the scenario auto-sets it (e.g., `deposit` → `inflow`, `withdrawal` → `outflow`).
+   - **Direction**: `inflow`, `outflow`, or `all`. If omitted, the scenario auto-sets it (e.g., `deposit` → `all`, `withdrawal` → `outflow`). Note: deposit uses `all` because DEP-OUT-* rules need outflow data.
    - **Hops**: Depth of the graph trace via `--inflow-hops` and `--outflow-hops` (Defaults to 3, max configurable up to 5).
    - **Max Nodes Per Hop**: `--max-nodes` bounds the branching factor per hop. Tell the user it defaults to 100, can be set up to 1000. Give them the choice.
    - **Time Window**: `--min-timestamp` and `--max-timestamp` in milliseconds. Tell the user it defaults to querying the last 4 years up to "now". They can specify custom timeframes.
@@ -41,14 +41,14 @@ When a user invokes you to screen an address, you MUST follow these steps:
 
    | Scenario | Rule Categories Applied | Default Direction | Use Case |
    |---|---|---|---|
-   | `onboarding` | Onboarding + Deposit | all | KYC: check target self-tags + inflow history |
-   | `deposit` | Deposit | inflow | Screen incoming funds for tainted sources |
+   | `onboarding` | Deposit | all | KYC: identical to deposit (self-tags + inflow + outflow history) |
+   | `deposit` | Deposit | all | Screen fund sources AND target outflow history |
    | `withdrawal` | Withdrawal | outflow | Screen outgoing funds for risky destinations |
    | `cdd` | CDD | all | Customer Due Diligence threshold triggers |
    | `monitoring` | Ongoing Monitoring | all | Continuous structuring/smurfing alerts |
    | `all` | ALL categories | all | Full comprehensive scan (default) |
 
-   **Key design**: `onboarding` includes Deposit rules because onboarding = target self-tag check + historical inflow risk assessment.
+   **Key design**: `onboarding` and `deposit` use identical Deposit rules — DEP-SELF-* rules check the target's own tags, DEP-OUT-* rules check outflow history, and standard DEP-* rules check inflow sources. Rules self-filter by `direction` and `min_hops`/`max_hops` fields.
 
 3. **Policy Dependency Check**:
    Before executing the script, silently check if there is a `rules.json` file in the user's **Current Working Directory (`./`)**.
