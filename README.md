@@ -6,30 +6,25 @@ Screen blockchain addresses, generate compliance rules, create policy documents 
 
 ## Install
 
-### OpenClaw Agent
-```bash
-clawhub install amlclaw
-```
+Tell any AI agent:
+
+> "参考 https://github.com/amlclaw/amlclaw 安装 amlclaw"
+
+Or manually:
 
 ### Claude Code
 ```bash
-# Clone into your project's skill directory
 git clone https://github.com/amlclaw/amlclaw.git .claude/skills/amlclaw
-
-# Install Python dependencies
 pip install -r .claude/skills/amlclaw/requirements.txt
 ```
 
-### Other Agent Frameworks
+### OpenClaw / Other Agent Frameworks
 ```bash
-# Clone into your workspace's skill directory
 git clone https://github.com/amlclaw/amlclaw.git ./skills/amlclaw
-
-# Install Python dependencies
 pip install -r skills/amlclaw/requirements.txt
 ```
 
-After install, read `SKILL.md` in the skill directory for usage instructions.
+After install, the agent reads `SKILL.md` for usage instructions.
 
 ## What's Included
 
@@ -42,10 +37,6 @@ After install, read `SKILL.md` in the skill directory for usage instructions.
 | Tag Taxonomy | `references/trustin-labels.md` | TrustIn label categories for rule authoring |
 | Scripts | `scripts/` | Python screening pipeline |
 | Schemas | `schema/` | JSON schemas for rules and reports |
-
-## Security Note
-
-This skill may trigger automated security scanners (e.g., VirusTotal Code Insight) due to crypto/blockchain terminology, external API calls, and API key handling patterns. **This is expected and not malicious** — AMLClaw is a compliance tool that necessarily interacts with blockchain data APIs. All code is open source and auditable.
 
 ## API
 
