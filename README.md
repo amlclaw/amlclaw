@@ -2,17 +2,27 @@
 
 AI-powered crypto AML compliance skill for coding agents.
 
+Screen blockchain addresses, generate compliance rules, create policy documents — out of the box.
+
 ## Install
 
+**OpenClaw:**
 ```bash
-git clone https://github.com/amlclaw/amlclaw.git
-cd amlclaw && pip install -r requirements.txt
+clawhub install amlclaw
 ```
 
-For Claude Code / OpenClaw — add as a skill:
+**Claude Code:**
+```bash
+git clone https://github.com/amlclaw/amlclaw.git .claude/skills/amlclaw
+```
+
+**Any agent framework:**
 ```bash
 git clone https://github.com/amlclaw/amlclaw.git ./skills/amlclaw
+pip install -r skills/amlclaw/requirements.txt
 ```
+
+One skill. Three capabilities. Zero configuration required.
 
 ## What's Included
 
@@ -34,8 +44,10 @@ For full unmasked data: get a free key at [trustin.info](https://trustin.info) a
 
 ## Open Source Ecosystem
 
-- **This repo** — AI agent skill (CLI-based, lightweight)
-- **[AMLClaw Dashboard](https://github.com/amlclaw/amlclaw.com)** — Full web UI with visual flow graphs, screening history, monitoring
+| Project | Description |
+|---------|-------------|
+| **[AMLClaw Skill](https://github.com/amlclaw/amlclaw)** | This repo — AI agent skill, CLI-based, lightweight |
+| **[AMLClaw Dashboard](https://github.com/amlclaw/amlclaw.com)** | Full web UI — visual flow graphs, screening history, 24/7 monitoring |
 
 ## License
 
