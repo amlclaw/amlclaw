@@ -43,6 +43,10 @@ After install, read `SKILL.md` in the skill directory for usage instructions.
 | Scripts | `scripts/` | Python screening pipeline |
 | Schemas | `schema/` | JSON schemas for rules and reports |
 
+## Security Note
+
+This skill may trigger automated security scanners (e.g., VirusTotal Code Insight) due to crypto/blockchain terminology, external API calls, and API key handling patterns. **This is expected and not malicious** — AMLClaw is a compliance tool that necessarily interacts with blockchain data APIs. All code is open source and auditable.
+
 ## API
 
 Blockchain data via [TrustIn](https://trustin.info) KYA API.
