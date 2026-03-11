@@ -6,23 +6,30 @@ Screen blockchain addresses, generate compliance rules, create policy documents 
 
 ## Install
 
-**OpenClaw:**
+### OpenClaw Agent
 ```bash
 clawhub install amlclaw
 ```
 
-**Claude Code:**
+### Claude Code
 ```bash
+# Clone into your project's skill directory
 git clone https://github.com/amlclaw/amlclaw.git .claude/skills/amlclaw
+
+# Install Python dependencies
+pip install -r .claude/skills/amlclaw/requirements.txt
 ```
 
-**Any agent framework:**
+### Other Agent Frameworks
 ```bash
+# Clone into your workspace's skill directory
 git clone https://github.com/amlclaw/amlclaw.git ./skills/amlclaw
+
+# Install Python dependencies
 pip install -r skills/amlclaw/requirements.txt
 ```
 
-One skill. Three capabilities. Zero configuration required.
+After install, read `SKILL.md` in the skill directory for usage instructions.
 
 ## What's Included
 
@@ -38,9 +45,10 @@ One skill. Three capabilities. Zero configuration required.
 
 ## API
 
-Blockchain data via TrustIn KYA API. **No API key required** — works out of the box with desensitized data.
+Blockchain data via [TrustIn](https://trustin.info) KYA API.
 
-For full unmasked data: get a free key at [trustin.info](https://trustin.info) and set `TRUSTIN_API_KEY` in `.env`.
+- **No API key required** — works out of the box with desensitized data
+- **With API key** — full unmasked data, get a free key at [trustin.info](https://trustin.info), set `TRUSTIN_API_KEY` in `.env`
 
 ## Open Source Ecosystem
 
