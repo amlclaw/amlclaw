@@ -1,16 +1,6 @@
-# Python
+graph_data/
+reports/
 __pycache__/
-*.py[cod]
-*.egg-info/
-
-# Environment
+*.pyc
 .env
-.venv/
-
-# Runtime outputs (generated per-run, not committed)
-# graph_data/
-# reports/
-
-# OS
 .DS_Store
-Thumbs.db

@@ -1,61 +1,29 @@
-# AMLClaw SDK 🦅
+# AMLClaw 🦅
 
-AMLClaw is an open-source, LLM-native toolkit designed for automated Crypto AML (Anti-Money Laundering) investigations, rule-engine configuration, and Continuous Risk Monitoring. 
+AI-powered crypto AML compliance toolkit for coding agents.
 
-This repository operates primarily as a "**Skill Pack**" intended to be utilized by autonomous coding agents (like Claude Code, OpenClaw, or Gemini Agents) rather than traditional human CLI interaction, although manual execution is supported.
+## What It Does
+- **Screen** blockchain addresses against compliance rules (Tron, Ethereum, Bitcoin)
+- **Generate** machine-readable AML detection rules from 40+ regulations
+- **Create** formal compliance policy documents
 
-## 📦 Included Skills
-
-This repository contains standalone agentic "skills". By cloning this repo, your Agent immediately inherits the ability to perform complex compliance operations.
-
-| Skill | Directory | Description |
-| :--- | :--- | :--- |
-| **AML Rule Generator** | `/aml-rule-generator` | Reads global crypto regulatory documents (FATF, MAS, VARA) and synthesizes localized, machine-readable `rules.json` enforcement policies. |
-| **Address Screening (KYA)** | `/aml-address-screening` | Deep-scans a blockchain address up to 5 hops, mathematically maps fund flows, and evaluates exposure against your local `rules.json` to produce professional Markdown Audit reports. |
-
-## 🚀 Installation for LLM Agents
-
-If you are using an Agent Framework (like Claude Code or OpenClaw), simply clone this repository into your workspace. 
-
+## Quick Start
 ```bash
-git clone https://github.com/YourUsername/amlclaw.git ./skills/amlclaw
+git clone https://github.com/amlclaw/amlclaw.git
+pip install requests python-dotenv
 ```
 
-Because each skill contains a standardized `SKILL.md` instruction file, your agent will autonomously ingest the operating capabilities, prerequisites, and Python execution strings.
+Works immediately — ships with pre-built rulesets for Singapore, Hong Kong, and Dubai.
 
-## ⚙️ Requirements & Configuration
-
-1. **Python 3.10+** is required to run the data extraction scripts.
-2. Install dependencies:
-   ```bash
-   pip install -r aml-address-screening/requirements.txt
-   ```
-3. **Environment Setup**: The screening engine requires a free API key from the TrustIn Graph provider.
-   - Go to [trustin.info](https://trustin.info) and log in with your Google account.
-   - Click on your avatar to generate an API key (Note: Free tier has a 100 requests/day limit).
-   - Copy the `.env.example` file to create your local `.env`.
-
+## For AI Agents
+Add as a skill to Claude Code, OpenClaw, or any agent framework:
 ```bash
-cp .env.example .env
-# Edit .env and insert your TRUSTIN_API_KEY
+git clone https://github.com/amlclaw/amlclaw.git ./skills/amlclaw
 ```
 
-## 🧠 Example Agent Prompts
+## API
+Uses TrustIn KYA API. Works without API key (desensitized data).
+For full data: get a free key at [trustin.info](https://trustin.info).
 
-Try asking your Agent the following once `amlclaw` is installed:
-
-> "Read the MAS regulatory notice in the rule generator's reference folder, and construct a severe zero-tolerance deposit policy for Singapore."
-
-> "Use the AML Address Screening skill to investigate Tron address `TGE94...` using our new rules.json file. Check both inflows and outflows up to 3 hops."
-
-## 📖 Documentation
-
-| Document | Description |
-| :--- | :--- |
-| [Address Screening — DESIGN.md](aml-address-screening/DESIGN.md) | Architecture, design decisions, and rule matching logic for the screening pipeline |
-| [Address Screening — CHANGELOG.md](aml-address-screening/CHANGELOG.md) | Version history and release notes |
-| [Rule Generator — DESIGN.md](aml-rule-generator/DESIGN.md) | Schema design, category system, and validation pipeline |
-| [Rule Generator — CHANGELOG.md](aml-rule-generator/CHANGELOG.md) | Version history and release notes |
-
----
-*Built for the next generation of predictive LLM compliance.*
+## License
+MIT

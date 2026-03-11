@@ -15,9 +15,9 @@ import os
 import re
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-SKILL_DIR = os.path.dirname(SCRIPT_DIR)  # aml-rule-generator/
+SKILL_DIR = os.path.dirname(SCRIPT_DIR)  # amlclaw/
 SCHEMA_PATH = os.path.join(SKILL_DIR, "schema", "rule_schema.json")
-LABELS_PATH = os.path.join(SKILL_DIR, "references", "Trustin AML labels.md")
+LABELS_PATH = os.path.join(SKILL_DIR, "references", "trustin-labels.md")
 
 
 def load_json(path):

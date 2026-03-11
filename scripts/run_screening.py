@@ -62,14 +62,6 @@ def main():
     if direction is None:
         direction = SCENARIO_DIRECTION_DEFAULTS.get(args.scenario, "all")
 
-    # --- Update check (non-blocking) ---
-    try:
-        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "scripts"))
-        from check_update import check_for_updates
-        check_for_updates(quiet=True)
-    except Exception:
-        pass  # Never block screening for update check
-
     scenario_label = args.scenario.upper()
 
     print("\n" + "="*60)
@@ -126,14 +118,12 @@ def main():
         print("="*60)
         print(f"\n  rules.json not found at: {rules_path}")
         print("\n  You need a rules.json policy file before screening.")
-        print("  Use the aml-rule-generator skill to create one:\n")
-        print("  Option 1 (Quick Start - Load regional defaults):")
-        print("    /aml-rule-generator load singapore")
-        print("    /aml-rule-generator load hongkong")
-        print("    /aml-rule-generator load dubai\n")
-        print("  Option 2 (Custom):")
-        print("    /aml-rule-generator\n")
-        print("  This will generate rules.json in your workspace root.")
+        print("  Quick fix — copy a default ruleset:\n")
+        skill_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+        print(f"    cp {skill_root}/defaults/rulesets/singapore_mas.json ./rules.json")
+        print(f"    cp {skill_root}/defaults/rulesets/hong_kong_sfc.json ./rules.json")
+        print(f"    cp {skill_root}/defaults/rulesets/dubai_vara.json ./rules.json\n")
+        print("  Or generate custom rules via the AMLClaw rule generation mode.")
         print("="*60 + "\n")
         sys.exit(1)
 

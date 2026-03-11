@@ -25,22 +25,17 @@ class KYAResult:
 class TrustInAPI:
     """Client for TrustIn API (Async Tasks)."""
     
-    BASE_URL = "https://api.trustin.info/api/v2/investigate"
+    BASE_URL = "https://api.trustin-webui-dev.com/api/v2/investigate"
     
     def __init__(self, api_key: Optional[str] = None):
         """
         Initialize TrustIn API client.
         
         Args:
-            api_key: TrustIn API key.
+            api_key: TrustIn API key. Optional — works without key (desensitized mode).
         """
-        self.api_key = api_key or os.getenv("TRUSTIN_API_KEY")
-        
-        if not self.api_key:
-            raise ValueError(
-                "No TrustIn API key provided. "
-                "Set TRUSTIN_API_KEY environment variable or pass api_key parameter."
-            )
+        self.api_key = api_key or os.getenv("TRUSTIN_API_KEY") or ""
+        # No raise — works without key in desensitized mode
         
         self.session = requests.Session()
         self.session.headers.update({
@@ -50,7 +45,9 @@ class TrustInAPI:
     
     def _make_request(self, endpoint: str, data: Dict, require_auth: bool = False) -> Dict:
         """Make request to TrustIn API."""
-        url = f"{self.BASE_URL}/{endpoint}?apikey={self.api_key}"
+        url = f"{self.BASE_URL}/{endpoint}"
+        if self.api_key:
+            url += f"?apikey={self.api_key}"
             
         try:
             # The API expects raw string payload in text/plain format according to curl
