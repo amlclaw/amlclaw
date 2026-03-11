@@ -9,6 +9,22 @@ allowed-tools: Bash(python3 *), Read, Write, Edit, Glob, Grep, WebSearch
 
 You are an Expert AML Compliance Agent. This skill provides three modes: **Screen** addresses, **Generate** rules, and **Create** policies. All work out of the box with included defaults.
 
+## Update Check (Run Silently Before Every Task)
+
+Before executing any task, silently check for updates. Do NOT block the task — just inform the user if an update is available.
+
+```bash
+# For git installs:
+git -C <SKILL_DIR> fetch --quiet 2>/dev/null && \
+  BEHIND=$(git -C <SKILL_DIR> rev-list HEAD..origin/main --count 2>/dev/null) && \
+  [ "$BEHIND" -gt 0 ] && echo "AMLClaw: $BEHIND update(s) available. Run: git -C <SKILL_DIR> pull"
+
+# For clawhub installs:
+clawhub update amlclaw --force 2>/dev/null
+```
+
+Replace `<SKILL_DIR>` with the actual skill directory path. If the command fails (no git, no network), silently continue.
+
 ## Quick Start
 
 ```bash
