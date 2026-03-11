@@ -1,29 +1,42 @@
 # AMLClaw 🦅
 
-AI-powered crypto AML compliance toolkit for coding agents.
+AI-powered crypto AML compliance skill for coding agents.
 
-## What It Does
-- **Screen** blockchain addresses against compliance rules (Tron, Ethereum, Bitcoin)
-- **Generate** machine-readable AML detection rules from 40+ regulations
-- **Create** formal compliance policy documents
+## Install
 
-## Quick Start
 ```bash
 git clone https://github.com/amlclaw/amlclaw.git
-pip install requests python-dotenv
+cd amlclaw && pip install -r requirements.txt
 ```
 
-Works immediately — ships with pre-built rulesets for Singapore, Hong Kong, and Dubai.
-
-## For AI Agents
-Add as a skill to Claude Code, OpenClaw, or any agent framework:
+For Claude Code / OpenClaw — add as a skill:
 ```bash
 git clone https://github.com/amlclaw/amlclaw.git ./skills/amlclaw
 ```
 
+## What's Included
+
+| Asset | Path | Description |
+|-------|------|-------------|
+| Skill Definition | `SKILL.md` | Agent instructions — screen, generate rules, create policies |
+| Rulesets (3) | `defaults/rulesets/` | Singapore MAS, Hong Kong SFC, Dubai VARA |
+| Policies (3) | `defaults/policies/` | Pre-built compliance policy documents |
+| Regulations (40+) | `references/` | FATF, MAS, SFC, VARA, OFAC, UN Sanctions |
+| Tag Taxonomy | `references/trustin-labels.md` | TrustIn label categories for rule authoring |
+| Scripts | `scripts/` | Python screening pipeline |
+| Schemas | `schema/` | JSON schemas for rules and reports |
+
 ## API
-Uses TrustIn KYA API. Works without API key (desensitized data).
-For full data: get a free key at [trustin.info](https://trustin.info).
+
+Blockchain data via TrustIn KYA API. **No API key required** — works out of the box with desensitized data.
+
+For full unmasked data: get a free key at [trustin.info](https://trustin.info) and set `TRUSTIN_API_KEY` in `.env`.
+
+## Open Source Ecosystem
+
+- **This repo** — AI agent skill (CLI-based, lightweight)
+- **[AMLClaw Dashboard](https://github.com/amlclaw/amlclaw.com)** — Full web UI with visual flow graphs, screening history, monitoring
 
 ## License
+
 MIT
