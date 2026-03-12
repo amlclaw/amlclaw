@@ -6,25 +6,9 @@ Screen blockchain addresses, generate compliance rules, create policy documents 
 
 ## Install
 
-Tell any AI agent:
+Tell your AI agent:
 
-> "参考 https://github.com/amlclaw/amlclaw 安装 amlclaw"
-
-Or manually:
-
-### Claude Code
-```bash
-git clone https://github.com/amlclaw/amlclaw.git .claude/skills/amlclaw
-pip install -r .claude/skills/amlclaw/requirements.txt
-```
-
-### OpenClaw / Other Agent Frameworks
-```bash
-git clone https://github.com/amlclaw/amlclaw.git ./skills/amlclaw
-pip install -r skills/amlclaw/requirements.txt
-```
-
-After install, the agent reads `SKILL.md` for usage instructions.
+> "Search GitHub for amlclaw and install it"
 
 ## What's Included
 
